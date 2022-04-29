@@ -10,9 +10,8 @@ with open('Data.csv', mode ='r')as file:
     ereader = csv.DictReader(file)
     csvFile = csv.reader(file)
     for lines in csvFile:
-        #print(lines)
         series=lines[0]      ##input("Enter Pump Series: ")
-        pole=lines[1]  ##input("Enter RPM: ")
+        pole=lines[1]        ##input("Enter RPM: ")
         a1=lines[2]
         a= int(a1)
         b1=lines[3]
@@ -26,7 +25,9 @@ with open('Data.csv', mode ='r')as file:
 
         rpm_p2=0
         rpm_p4=0
+        
 ## below logic is for retriving data from CSV File (Series as well as Poles)
+
         with open('project.csv', mode ='r')as file:
             ereader = csv.DictReader(file)
             csvFile = csv.reader(file)
@@ -35,7 +36,6 @@ with open('Data.csv', mode ='r')as file:
             count_row=7
             for lines in csvFile:
                 count_row=count_row+1
-                #print(count_row)
                 if (lines[0]==series or flag==1) and count!=16 :
                     if int(pole)>2000 and count<=7:
                         count_col=0
@@ -45,8 +45,6 @@ with open('Data.csv', mode ='r')as file:
                                 diameters.append(demo)
                             if count_col==2 and count_row%8==0:
                                 rpm_p2=int(float(demo))
-                                #print(rpm_p2)
-                            #print(count_col)
                             if (demo.isalpha() or demo=='' or demo==series or count_col==3 or count_col==2 or demo=='x1' or demo=='x2' or demo=='x3' or demo=='y1' or demo=='y2' or demo=='y3'):
                                 continue
                             temp=demo
@@ -61,20 +59,15 @@ with open('Data.csv', mode ='r')as file:
                         count_col=0
                         for demo in lines:
                             count_col=count_col+1
-                            #print('hiiiiii')
                             if count_col==3 and demo!='':
-                                #print('hii')
                                 diameters.append(demo)
                             if count_col==2 and count_row%8==0:
                                 rpm_p4=int(float(demo))
-                                #print(rpm_p4)
-                            #print(count_col)
                             if (demo.isalpha() or demo=='' or demo==series or count_col==3 or count_col==2 or demo=='x1' or demo=='x2' or demo=='x3' or demo=='y1' or demo=='y2' or demo=='y3'):
                         
                                 continue
                             else:    
                                 temp=demo
-                                #print(temp)
                                 if(lines[3]=='x' or lines[3]=='x1' or lines[3]=='x2' or lines[3]=='x3' ):
                                     x_demo_try.append(temp)
                                 if(lines[3]=='y' or lines[3]=='y1' or lines[3]=='y2' or lines[3]=='y3'):
@@ -87,80 +80,51 @@ with open('Data.csv', mode ='r')as file:
                     x_demo_try=[]
                     y_demo_try=[]
                     flag=1
-                    count=count+1
-        
-
-            
-            
-            
-        ## After retrival of data, data stores in x and y array
-
-        #print(x)
-        #print(len(x))
+                    count=count+1   
+               
+## After retrival of data, data gets stored in x and y array
 
         temp=[]
-        #print(len(x))
         for i in range(0, len(x)):
             temp=x[i]
-            #print(len(temp))
             for j in range(0, len(temp)):
                 temp[j] = float(temp[j])
             x[i]=temp
-    
-        #print(x)
         for i in range(0, len(y)):
             temp=y[i]
-            #print(len(temp))
             for j in range(0, len(temp)):
                 temp[j] = float(temp[j])
             y[i]=temp
-        #print(y) 
-
-
-#################################################done################################
-
-#1. Points should be taken from csv file
-#2. Convert user cordinate:  
+    
+# Graph co-ordinates are taken from csv file
 
 #line 1
         x0= np.array(x[0])
         y0= np.array(y[0])
-
-
 #line 2
         x1= np.array(x[1])
         y1= np.array(y[1])
-
-
 #line 3
         x2= np.array(x[2])
         y2= np.array(y[2])
-#print(x2)
-#print(y2)
-
 #line 4
         x3= np.array(x[3])
         y3= np.array(y[3])
 
-
         c=max(y3)
-
-
-
+        
         plt.xlim(0,400);
         plt.ylim(0,160);
 
 
-##User input for Flow and Head
+#User input for Flow and Head
         
-
         a_copy=a
         b_copy=b
 
+#Coverting a(Flow) and b(Head) if rpm differ than 2Pole and 4Pole rpm
 
-#Coverting a and b if rmp is differ then 2P and 4P
         if (int(pole) != int(rpm_p2)) or (int(pole) != int(rpm_p4)):
-            #print('hii')
             if(int(pole)>2000):
                 a = a  *  int(rpm_p2) / int(pole)
                 b = b  *  ((rpm_p2/int(pole)) * (rpm_p2/int(pole)))
@@ -168,17 +132,16 @@ with open('Data.csv', mode ='r')as file:
             else:
                 a = a * float(rpm_p4) / float(pole)
                 b = b  *  (( float(rpm_p4) /float(pole)) * (float(rpm_p4)/float(pole)))
-        
-
-
-#finding intersecting line
+  
+#intersecting line
         x4=[a,a]
         y4=[0,c]
-
 
         plt.scatter(a,b,color='black', s=10,alpha=0.8)
 
         plt.grid()
+        
+#Labelling x and y axis 
 
         plt.ylabel('Head (m)')
         plt.xlabel('Flow (m^3/hr)')
@@ -203,13 +166,13 @@ with open('Data.csv', mode ='r')as file:
         intersection2 = line_0.intersection(line_2)
         plt.plot(*intersection2.xy, 'ro')
 
+#finding intersection of line 3
         intersection3 = line_0.intersection(line_3)
         plt.plot(*intersection3.xy, 'ro')
 
+#finding intersection of line 4
         intersection4 = line_0.intersection(line_4)
         plt.plot(*intersection4.xy, 'ro')
-
-
 
         plt.show()
 
@@ -226,17 +189,13 @@ with open('Data.csv', mode ='r')as file:
         x8,y8 = intersection4.xy
         x8,y8
 
-#let value of line one is 278
-
-#print(diameters)
+#Finding out value of plotted point (Diameter value)
         j=0
         for i in diameters:
             temp_dia=float(i)
             diameters[j]=temp_dia
             j=j+1
-    #print(diameters)
-
-
+ 
         max_dia=y8[0]
         min_dia=y5[0]
 
@@ -260,37 +219,22 @@ with open('Data.csv', mode ='r')as file:
                 s=y7[0]-y6[0]
                 p=diameters[2]-diameters[1]
                 ans= diameters[1]+((r/s)*p) 
-        #logic
+  
             elif b<y6[0] and b>y5[0]:
                 r= b-y5[0]
                 s=y6[0]-y5[0]
                 p=diameters[1]-diameters[0]
                 ans= diameters[0]+((r/s)*p) 
-        #logic
-    
-    
+        
         print(ans)
 
         data = [series, pole, a_copy, b_copy, ans]
 
         with open('Diameters.csv', 'a', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)
-
-    # write the header
             
-
-    # write the data
             writer.writerow(data)
-    
 
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
 
 
 
